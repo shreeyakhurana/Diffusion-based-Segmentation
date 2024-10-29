@@ -28,5 +28,6 @@ def tensor_to_image(tensor, output_path=None):
 
 # Load result image tensors from results folder
 for f in os.listdir('results'):
-    result_image = torch.load(f'results/{f}', map_location=torch.device('cpu'))
-    tensor_to_image(result_image, f'results_images/{f}.jpg')
+    if not f.endswith(".py"):
+        result_image = torch.load(f'results/{f}', map_location=torch.device('cpu'))
+        tensor_to_image(result_image, f'sample_masks/{f}.jpg')
