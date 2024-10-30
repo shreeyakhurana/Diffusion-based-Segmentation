@@ -4,7 +4,7 @@ Dice score and IoU on segmentation and ground truth masks
 import numpy as np
 import torch
 import nibabel as nib 
-from scipy.ndimage import zoom
+import os
 
 def visualize_masks(seg_mask, gt_mask):
     import matplotlib.pyplot as plt
@@ -32,35 +32,34 @@ def iou(mask1, mask2):
     union = np.logical_or(mask1, mask2)
     return intersection.sum() / union.sum()
 
-def preproces_gt(gt_mask, target_size=(224, 224)):
-    # convert any non zero value to 1
+def preproces_gt(gt_mask):
     gt_mask[gt_mask > 0] = 1
-    # Calculate scaling factors for gt_mask
-    scale_factors = (target_size[0] / gt_mask.shape[0],
-                    target_size[1] / gt_mask.shape[1])
-    
-    # Resize gt_mask to match target size using scipy zoom
-    gt_mask_resized = zoom(gt_mask, scale_factors, order=0)
+    gt_mask_resized = gt_mask[..., 8:-8, 8:-8] 
     return gt_mask_resized
 
 
 
-# Load the masks
-seg_mask = torch.load(f'../results/eval_on_train_samples/000001_output0', map_location=torch.device('cpu'))
-#convert to numpy
-seg_mask = seg_mask.numpy()
-seg_mask = np.squeeze(seg_mask)
-gt_mask = nib.load('../data/training/000001/brats_train_001_seg_080_w.nii').get_fdata()
-gt_mask = preproces_gt(gt_mask)
+testing_results = '../results/eval_on_test_samples'
+testing_dir = '../data/small_test'
 
-print(seg_mask.shape)
-print(gt_mask.shape)
+dice_vals = []
+iou_vals = []
+
+for t in os.listdir(testing_dir):
+    gt_mask = nib.load(os.path.join(testing_dir, t, 'file name')).get_fdata()
+    gt_mask = preproces_gt(gt_mask)
+    seg_mask = torch.load(os.path.join(testing_results, t, 'file name'), map_location=torch.device('cpu'))
+    seg_mask = seg_mask.numpy()
+    seg_mask = np.squeeze(seg_mask)
+
+    dice_val = dice_score(seg_mask, gt_mask)
+    iou_val = iou(seg_mask, gt_mask)
+    dice_vals.append(dice_val)
+    iou_vals.append(iou_val)
+    #visualize_masks(seg_mask, gt_mask)
 
 
-# Calculate dice score and IoU
-dice_val = dice_score(seg_mask, gt_mask)
-iou_val = iou(seg_mask, gt_mask)
-
-print(f"Dice score: {dice_val:.4f}")
-print(f"IoU: {iou_val:.4f}")
-visualize_masks(seg_mask, gt_mask)
+avg_dice = np.mean(dice_vals)
+avg_iou = np.mean(iou_vals)
+print(f"Avg Dice score: {avg_dice:.4f}")
+print(f"Avg IoU: {avg_iou:.4f}")
