@@ -34,21 +34,21 @@ def iou(mask1, mask2):
 
 def preproces_gt(gt_mask):
     gt_mask[gt_mask > 0] = 1
-    gt_mask_resized = gt_mask[..., 8:-8, 8:-8] 
+    #gt_mask_resized = gt_mask[..., 8:-8, 8:-8] 
     return gt_mask_resized
 
 
 
-testing_results = '../results/eval_on_test_samples'
-testing_dir = '../data/small_test'
+seg_pred_dir = '../midpoint_eval_results/......'
+ground_truth_dir = '../midpoint_eval_results/midpoint_eval_samples'
 
 dice_vals = []
 iou_vals = []
 
-for t in os.listdir(testing_dir):
-    gt_mask = nib.load(os.path.join(testing_dir, t, 'file name')).get_fdata()
+for t in os.listdir(ground_truth_dir):
+    gt_mask = nib.load(os.path.join(ground_truth_dir, t, 'file name')).get_fdata()
     gt_mask = preproces_gt(gt_mask)
-    seg_mask = torch.load(os.path.join(testing_results, t, 'file name'), map_location=torch.device('cpu'))
+    seg_mask = torch.load(os.path.join(seg_pred_dir, t, 'file name'), map_location=torch.device('cpu'))
     seg_mask = seg_mask.numpy()
     seg_mask = np.squeeze(seg_mask)
 
