@@ -35,20 +35,22 @@ def iou(mask1, mask2):
 def preproces_gt(gt_mask):
     gt_mask[gt_mask > 0] = 1
     #gt_mask_resized = gt_mask[..., 8:-8, 8:-8] 
+    gt_mask_resized = gt_mask
     return gt_mask_resized
 
 
 
-seg_pred_dir = '../midpoint_eval_results/......'
+seg_pred_dir = '../midpoint_eval_results/midpoint_eval_generations/results_midpoint_eval_samples'
 ground_truth_dir = '../midpoint_eval_results/midpoint_eval_samples'
 
 dice_vals = []
 iou_vals = []
 
 for t in os.listdir(ground_truth_dir):
-    gt_mask = nib.load(os.path.join(ground_truth_dir, t, 'file name')).get_fdata()
+    base_name = t.split('_slice')[0]
+    gt_mask = nib.load(os.path.join(ground_truth_dir, t, base_name+"_seg.nii.gz")).get_fdata()
     gt_mask = preproces_gt(gt_mask)
-    seg_mask = torch.load(os.path.join(seg_pred_dir, t, 'file name'), map_location=torch.device('cpu'))
+    seg_mask = torch.load(os.path.join(seg_pred_dir, t+"_output0"), map_location=torch.device('cpu'))
     seg_mask = seg_mask.numpy()
     seg_mask = np.squeeze(seg_mask)
 
@@ -56,7 +58,7 @@ for t in os.listdir(ground_truth_dir):
     iou_val = iou(seg_mask, gt_mask)
     dice_vals.append(dice_val)
     iou_vals.append(iou_val)
-    #visualize_masks(seg_mask, gt_mask)
+    visualize_masks(seg_mask, gt_mask)
 
 
 avg_dice = np.mean(dice_vals)
