@@ -40,7 +40,7 @@ def preproces_gt(gt_mask):
 
 
 
-seg_pred_dir = '../midpoint_eval_results/midpoint_eval_generations/results_midpoint_eval_samples'
+seg_pred_dir = '../midpoint_eval_results/large_model_generations/results_large_model_midpoint_eval_samples'
 ground_truth_dir = '../midpoint_eval_results/midpoint_eval_samples'
 
 dice_vals = []

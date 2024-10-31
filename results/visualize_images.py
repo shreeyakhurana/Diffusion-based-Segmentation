@@ -43,7 +43,7 @@ for i, ax in enumerate(axes.reshape(-1)):
     j = i // 6
     k = i % 6
     if k == 5:
-        seg_mask = torch.load(os.path.join('eval_on_train_samples/000001_output0'), map_location=torch.device('cpu'))
+        seg_mask = torch.load(os.path.join('../midpoint_eval_results/large_model_generations/results_large_model_midpoint_eval_samples/BraTS20_Training_010_slice_2_output0'), map_location=torch.device('cpu'))
         seg_mask = seg_mask.numpy()
         seg_mask = np.squeeze(seg_mask)
         ax.imshow(seg_mask)
