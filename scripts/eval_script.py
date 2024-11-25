@@ -52,7 +52,7 @@ def preprocess_seg(seg_mask):
 
 
 
-seg_pred_dir = '../full_training_eval_results/BraTS20_Training/'
+seg_pred_dir = '../full_training_eval_results/ddim_results/'
 ground_truth_dir = '../full_training_eval_results/test_slices/'
 
 dice_vals = []
@@ -61,20 +61,26 @@ iou_vals = []
 for t in os.listdir(ground_truth_dir):
     base_name = t.split('_slice')[0] #BraTS20_Training_007
     print(f"Processing {t}")
-    gt_mask = nib.load(os.path.join(ground_truth_dir, t, base_name+"_seg.nii")).get_fdata()
+    gt_file_name = os.path.join(ground_truth_dir, t, base_name+"_seg.nii")
+    print(f"Ground truth file: {gt_file_name}")
+    gt_mask = nib.load(gt_file_name).get_fdata()
     gt_mask = preproces_gt(gt_mask)
     
-    seg_mask = torch.load(os.path.join(seg_pred_dir, t+"_output0"), map_location=torch.device('cpu'))
+    seg_file_name = os.path.join(seg_pred_dir, t+"_output0")
+    print(f"Segmentation file: {seg_file_name}")
+    seg_mask = torch.load(seg_file_name, map_location=torch.device('cpu'))
     seg_mask = seg_mask.numpy()
     seg_mask = np.squeeze(seg_mask)
     seg_mask = preprocess_seg(seg_mask)
+    seg_mask = seg_mask[0]
+
 
     dice_val = dice_score(seg_mask, gt_mask)
     iou_val = iou(seg_mask, gt_mask)
     dice_vals.append(dice_val)
     iou_vals.append(iou_val)
-    #visualize_masks(seg_mask, gt_mask)
-    #breakpoint()
+    # visualize_masks(seg_mask, gt_mask)
+    # breakpoint()
 
 
 avg_dice = np.mean(dice_vals)
