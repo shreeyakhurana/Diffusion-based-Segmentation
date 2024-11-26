@@ -51,14 +51,15 @@ class BRATSDataset(torch.utils.data.Dataset):
         out = torch.stack(out)
         if self.test_flag:
             image=out
-            image = image[..., 8:-8, 8:-8]     #crop to a size of (224, 224)
+            # commenting out because i preprocessed out data to be cropped already
+            # image = image[..., 8:-8, 8:-8]     #crop to a size of (224, 224)
             return (image, path)
         else:
 
             image = out[:-1, ...]
             label = out[-1, ...][None, ...]
-            image = image[..., 8:-8, 8:-8]      #crop to a size of (224, 224)
-            label = label[..., 8:-8, 8:-8]
+            # image = image[..., 8:-8, 8:-8]      #crop to a size of (224, 224)
+            # label = label[..., 8:-8, 8:-8]
             label=torch.where(label > 0, 1, 0).float()  #merge all tumor classes into one
             return (image, label)
 

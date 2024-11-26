@@ -14,6 +14,7 @@ sys.path.append(".")
 import numpy as np
 import time
 import torch as th
+
 import torch.distributed as dist
 from guided_diffusion import dist_util, logger
 from guided_diffusion.bratsloader import BRATSDataset
@@ -92,6 +93,7 @@ def main():
             sample, x_noisy, org = sample_fn(
                 model,
                 (args.batch_size, 3, args.image_size, args.image_size), img,
+                step=args.diffusion_steps,
                 clip_denoised=args.clip_denoised,
                 model_kwargs=model_kwargs,
             )

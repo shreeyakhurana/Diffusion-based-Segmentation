@@ -60,6 +60,7 @@ def model_and_diffusion_defaults():
         resblock_updown=False,
         use_fp16=False,
         use_new_attention_order=False,
+        dpm_solver=False,
     )
     res.update(diffusion_defaults())
     return res
@@ -95,6 +96,7 @@ def create_model_and_diffusion(
     resblock_updown,
     use_fp16,
     use_new_attention_order,
+    dpm_solver,
 ):
     model = create_model(
         image_size,
@@ -122,6 +124,7 @@ def create_model_and_diffusion(
         predict_xstart=predict_xstart,
         rescale_timesteps=rescale_timesteps,
         rescale_learned_sigmas=rescale_learned_sigmas,
+        dpm_solver=dpm_solver,
         timestep_respacing=timestep_respacing,
     )
     return model, diffusion
@@ -322,6 +325,7 @@ def sr_create_model_and_diffusion(
         noise_schedule=noise_schedule,
         use_kl=use_kl,
         predict_xstart=predict_xstart,
+        dpm_solver = dpm_solver,
         rescale_timesteps=rescale_timesteps,
         rescale_learned_sigmas=rescale_learned_sigmas,
         timestep_respacing=timestep_respacing,
@@ -389,6 +393,7 @@ def create_gaussian_diffusion(
     noise_schedule="linear",
     use_kl=False,
     predict_xstart=False,
+    dpm_solver = False,
     rescale_timesteps=False,
     rescale_learned_sigmas=False,
     timestep_respacing="",
@@ -418,6 +423,7 @@ def create_gaussian_diffusion(
             else gd.ModelVarType.LEARNED_RANGE
         ),
         loss_type=loss_type,
+        dpm_solver=dpm_solver,
         rescale_timesteps=rescale_timesteps,
     )
 
